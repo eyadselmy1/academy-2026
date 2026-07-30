@@ -1,0 +1,16 @@
+{
+  "name": "solid-exercises",
+  "version": "1.0.0",
+  "description": "Hands-on SOLID principles exercises in TypeScript",
+  "scripts": {
+    "exercise-1": "ts-node src/exercise-1-srp.ts",
+    "exercise-2": "ts-node src/exercise-2-ocp.ts",
+    "exercise-3": "ts-node src/exercise-3-lsp.ts",
+    "exercise-4": "ts-node src/exercise-4-isp.ts",
+    "exercise-5": "ts-node src/exercise-5-dip.ts"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
