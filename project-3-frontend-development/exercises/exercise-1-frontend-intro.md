@@ -79,19 +79,34 @@ In `index.ts` (or `app.ts` if you've extracted it), configure Nunjucks as the vi
 You need to tell Nunjucks where to find templates — both your own views **and** the GOV.UK Frontend templates:
 
 ```typescript
+import "dotenv/config";
+import express from "express";
 import nunjucks from "nunjucks";
 import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const app = express();
+const PORT = Number(process.env.PORT) || 3000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 nunjucks.configure(
-  [
-    path.join(__dirname, "views"),
-    path.join(__dirname, "..", "node_modules", "govuk-frontend", "dist"),
-  ],
-  {
-    autoescape: true,
-    express: app,
-  }
+    [
+        path.join(__dirname, "views"),
+        path.join(__dirname, "..", "node_modules", "govuk-frontend", "dist"),
+    ],
+    {
+        autoescape: true,
+        express: app,
+    }
 );
+
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
+
 ```
 
 > `autoescape: true` protects against XSS by escaping HTML in variables by default.
@@ -172,31 +187,19 @@ Create `src/views/layouts/base.njk`. This is the page shell that every page will
 Create `src/views/partials/header.njk`:
 
 ```html
-<header class="govuk-header" role="banner" data-module="govuk-header">
-  <div class="govuk-header__container govuk-width-container">
-    <div class="govuk-header__content">
-      <a href="/" class="govuk-header__link govuk-header__service-name">
-        Expense Tracker
-      </a>
-    </div>
-  </div>
-</header>
+{% from "govuk/components/header/macro.njk" import govukHeader %}
+
+{{ govukHeader({
+  homepageUrl: "#"
+}) }}
 ```
 
 Create `src/views/partials/footer.njk`:
 
 ```html
-<footer class="govuk-footer" role="contentinfo">
-  <div class="govuk-width-container">
-    <div class="govuk-footer__meta">
-      <div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
-        <span class="govuk-footer__licence-description">
-          Built as a learning exercise
-        </span>
-      </div>
-    </div>
-  </div>
-</footer>
+{% from "govuk/components/footer/macro.njk" import govukFooter %}
+
+{{ govukFooter({}) }}
 ```
 
 ---
