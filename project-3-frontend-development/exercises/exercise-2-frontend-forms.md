@@ -51,6 +51,9 @@ HTML forms send data as URL-encoded key-value pairs. Express doesn't parse this 
 
 In `index.ts` (or `app.ts`), add `express.urlencoded({ extended: true })` **before** your routes are registered.
 
+```
+app.use(express.urlencoded({ extended: true }));
+```
 > Without this, `req.body` will be `undefined` when a form is submitted. Refer to the slides for the exact middleware call.
 
 ---
@@ -98,12 +101,64 @@ Your form needs the following fields. For each field, use the appropriate GOV.UK
 | `date` | `date` | [Date Input](https://design-system.service.gov.uk/components/date-input/) |
 | `description` | `text` | [Text Input](https://design-system.service.gov.uk/components/text-input/) |
 | `user` | `text` | [Text Input](https://design-system.service.gov.uk/components/text-input/) |
-| `amount` | `number` | [Text Input](https://design-system.service.gov.uk/components/text-input/) |
+| `amount` | `text` | [Text Input](https://design-system.service.gov.uk/components/text-input/) |
 
 Each field must:
 - Have a `name` attribute matching the field name above — this is the key used in `req.body`
 - Pre-fill the `value` when editing (use a Nunjucks conditional: `{{ expense.fieldName if expense else '' }}`)
 - Be wrapped in a `govuk-form-group` div with a `govuk-label`
+
+```
+{% block content %}
+  <form
+    method="post"
+    action="{% if expense %}/expenses/{{ expense.id }}/edit{% else %}/expenses{% endif %}"
+    class="govuk-!-margin-top-6"
+  >
+  
+    <!-- example description completed -->
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="description">Description</label>
+      <input
+        class="govuk-input"
+        id="description"
+        name="description"
+        type="text"
+        value="{{ expense.description if expense else '' }}"
+      />
+    </div>
+
+    <!-- example date -->
+     <div class="govuk-form-group">
+      <label class="govuk-label" for="date">Date</label>
+      <div id="date-hint" class="govuk-hint">For example, 2026-08-04</div>
+      <div class="govuk-date-input" id="date-container">
+        <div class="govuk-date-input__item">
+          <input
+            class="govuk-input govuk-date-input__input govuk-input--width-10"
+            id="date"
+            name="date"
+            type="date"
+            value="{{ expense.date if expense else '' }}"
+            aria-describedby="date-hint"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- TODO: Add user field (GOV.UK Text Input) -->
+    <!-- TODO: Add amount field (GOV.UK Text Input) -->
+
+    <button class="govuk-button" data-module="govuk-button" type="submit">
+      Save expense
+    </button>
+
+    <p class="govuk-body">
+      <a href="/expenses" class="govuk-link">Cancel</a>
+    </p>
+  </form>
+{% endblock %}
+```
 
 For the submit button, use the [GOV.UK Button component](https://design-system.service.gov.uk/components/button/). Change the button text between "Add expense" (create) and "Update expense" (edit) using a Nunjucks conditional.
 
